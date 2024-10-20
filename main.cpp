@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <chrono>
-#include <set>
+#include <unordered_set>
 using namespace std;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration;
@@ -29,6 +29,16 @@ struct Node {
 struct CompareNode {
     bool operator() (Node const& n1, Node const& n2) {
         return n1.path_cost > n2.path_cost;
+    }
+};
+
+struct VectorHash {
+    size_t operator()(const vector<int>& v) const {
+        string hash;
+        for (int i : v) {
+            hash += to_string(i);
+        }
+        return std::hash<string>()(hash);
     }
 };
 
@@ -117,7 +127,7 @@ Node bfs(vector<int> puzzle, int* exp_nodes) {
     }
     deque<Node> open;
     open.push_back(make_root_node(puzzle));
-    set< vector<int> > closed;
+    unordered_set< vector<int>, VectorHash > closed;
     closed.insert(puzzle);
 
     while (!open.empty()) {
