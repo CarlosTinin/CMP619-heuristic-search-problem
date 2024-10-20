@@ -1,4 +1,2 @@
 make:
-	g++ main.cpp -o main
-dev:
-	g++ main.cpp -o main -std=c++11
+	g++ src/main.cpp src/algorithms/utils.cpp src/algorithms/bfs.cpp src/algorithms/idfs.cpp -o main -O2 -std=c++11
