@@ -62,14 +62,11 @@ Node make_node(Node* parent, ACTIONS action, vector<int> state) {
     return node;
 }
 
-vector<int> swap(vector<int> puzzle, int tile_one, int tile_two) {
-    vector<int> result = puzzle;
+void swap(vector<int> first_position, vector<int> second_position) {
 
-    int temp = result[tile_one];
-    result[tile_one] = result[tile_two];
-    result[tile_two] = temp;
-
-    return result;
+    vector<int> temp = first_position;
+    first_position = second_position;
+    second_position = temp;
 }
 
 vector<Node> successors(vector<int> puzzle, Node* parent) { // works for 8puzzle
@@ -82,24 +79,21 @@ vector<Node> successors(vector<int> puzzle, Node* parent) { // works for 8puzzle
         }
     }
 
-    if (blank - 3 >= 0) {
-        if (parent->state.at(blank-3) != 0)
-            result.push_back(make_node(parent, UP, swap(puzzle, blank-3, blank)));
-    }
+    vector<pair<int, int>> moves = {
+        {blank-3, UP},
+        {blank-1, LEFT},
+        {blank+1, RIGHT},
+        {blank+3, DOWN}
+    };
 
-    if (blank - 1 >= 0 && blank - 1 != 2 && blank - 1 != 5) {
-        if (parent->state.at(blank-1) != 0)
-            result.push_back(make_node(parent, LEFT, swap(puzzle, blank-1, blank)));
-    }
-
-    if (blank + 1 <= 8 && blank + 1 != 3 && blank + 1 != 6) {
-        if (parent->state.at(blank+1) != 0)
-            result.push_back(make_node(parent, RIGHT, swap(puzzle, blank+1, blank)));
-    }
-
-    if (blank + 3 <= 8) {
-        if (parent->state.at(blank+3) != 0)
-            result.push_back(make_node(parent, DOWN, swap(puzzle, blank+3, blank)));
+    for (const auto& pair: moves) {
+        int new_blank = pair.first;
+        int direction = pair.second;
+        if (new_blank >= 0 && new_blank < 9 && !((blank % 3 == 0 && direction == LEFT) || (blank % 3 == 2 && direction == RIGHT))) {
+            swap(puzzle[new_blank], puzzle[blank]);
+            result.push_back(make_node(parent, UP, puzzle));
+            swap(puzzle[blank], puzzle[new_blank]);
+        }
     }
 
     return result;
@@ -143,7 +137,7 @@ Node bfs(vector<int> puzzle, int* exp_nodes) {
 
             if (closed.find(succ[i].state) == closed.end()) {
                 closed.insert(succ[i].state);
-                open.push_back(succ[i]);
+                open.push_back(std::move(succ[i]));
             }
         }
     }
