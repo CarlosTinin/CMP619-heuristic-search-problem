@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../lib/idfs.hpp"
 
-vector<int> recursive_idfs(vector<int>& puzzle, int* cost, int* exp_nodes, int depth_limit, vector<int> parent) {
+vector<int> recursive_idfs(vector<int> puzzle, int* cost, int* exp_nodes, int depth_limit, vector<int> parent) {
     if (is_goal(puzzle)) {
         return puzzle;
     }
@@ -35,7 +35,7 @@ vector<int> idfs(vector<int>& puzzle, int* cost, int* exp_nodes) {
     return vector<int>{};    
 }
 
-vector<vector<int>> successors(vector<int>& puzzle, vector<int> &parent) { // uses only state. works only for 8puzzle
+vector<vector<int>> successors(vector<int> puzzle, vector<int> parent) { // uses only state. works only for 8puzzle
     vector<vector<int>> result;
     int blank = 0;
     for (int i = 0; i < puzzle.size(); i++) {
@@ -57,9 +57,7 @@ vector<vector<int>> successors(vector<int>& puzzle, vector<int> &parent) { // us
         int direction = pair.second;
         if (new_blank >= 0 && new_blank < 9 && !((blank % 3 == 0 && direction == LEFT) || (blank % 3 == 2 && direction == RIGHT))) {
             if(parent.at(new_blank) != 0) {
-                swap(puzzle, new_blank, blank);
-                result.push_back(puzzle);
-                swap(puzzle, blank, new_blank);
+                result.push_back(swap(puzzle, new_blank, blank));
             }
         }
     }

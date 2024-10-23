@@ -1,12 +1,13 @@
 #include <iostream>
 #include <unordered_set>
+#include <stdlib.h> 
 #include "../lib/bfs.hpp"
 
-vector<Node> successors(vector<int> &puzzle, Node &parent) { // works only for 8puzzle
+vector<Node> successors(Node* actual) { // works only for 8puzzle
     vector<Node> result;
     int blank = 0;
-    for (int i = 0; i < puzzle.size(); i++) {
-        if (puzzle[i] == 0) {
+    for (int i = 0; i < actual->state.size(); i++) {
+        if (actual->state[i] == 0) {
             blank = i;
             break;
         }
@@ -21,12 +22,13 @@ vector<Node> successors(vector<int> &puzzle, Node &parent) { // works only for 8
 
     for (const auto& pair: moves) {
         int new_blank = pair.first;
-        int direction = pair.second;
+        ACTIONS direction = (ACTIONS) pair.second;
         if (new_blank >= 0 && new_blank < 9 && !((blank % 3 == 0 && direction == LEFT) || (blank % 3 == 2 && direction == RIGHT))) {
-            if (parent.state.at(new_blank) != 0) {
-                swap(puzzle, new_blank, blank);
-                result.push_back(make_node(&parent, UP, puzzle));
-                swap(puzzle, blank, new_blank);
+            if (actual->parent->state.at(new_blank) != 0) {
+                vector<int> newState = actual->state;
+                Node* parent = (Node *) malloc(sizeof(Node));
+                *parent = *actual;
+                result.push_back(make_node(parent, direction, swap(newState, new_blank, blank)));
             }
         }
     }
@@ -54,7 +56,8 @@ Node bfs(vector<int> puzzle, int* exp_nodes) {
     while (!open.empty()) {
         Node n = open.front();
         open.pop_front();
-        vector<Node> succ = successors(n.state, n);
+
+        vector<Node> succ = successors(&n);
         *exp_nodes+=1;
 
         for (int i = 0; i < succ.size(); i++) {
@@ -64,7 +67,7 @@ Node bfs(vector<int> puzzle, int* exp_nodes) {
 
             if (closed.find(succ[i].state) == closed.end()) {
                 closed.insert(succ[i].state);
-                open.push_back(std::move(succ[i]));
+                open.push_back(succ[i]);
             }
         }
     }

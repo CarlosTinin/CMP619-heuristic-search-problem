@@ -1,13 +1,10 @@
 #include <iostream>
 #include "utils.hpp"
+#include "bfs.hpp"
 
 #ifndef GBFS_H
 #define GBFS_H
 
-struct CompareHeuristicNode {
-    bool operator() (Node const& n1, Node const& n2) {
-        return n1.heuristic_cost > n2.heuristic_cost;
-    }
-};
+Node gbfs(vector<int> puzzle, int* exp_nodes, double* heuristic_total);
 
 #endif
