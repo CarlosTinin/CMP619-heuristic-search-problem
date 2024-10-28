@@ -23,6 +23,10 @@ struct Node {
     enum ACTIONS action;
     int path_cost;
     int heuristic_cost;
+
+    int f() {
+        return path_cost+heuristic_cost;
+    }
 };
 
 struct VectorHash {
@@ -37,11 +41,25 @@ struct VectorHash {
 
 struct CompareHeuristicNode {
     bool operator() (Node const& n1, Node const& n2) {
-        //return n1.heuristic_cost+n1.path_cost >= n2.heuristic_cost+n2.path_cost;
-        if (n1.heuristic_cost > n2.heuristic_cost) {
+        if (n1.heuristic_cost > n2.heuristic_cost) { // min: valor - h
             return true;
         } else if (n1.heuristic_cost == n2.heuristic_cost) {
-            return n1.path_cost <= n2.path_cost;
+            return n1.path_cost <= n2.path_cost; // max: valor - g
+        }
+
+        return false;
+    }
+};
+
+struct CompareHeuristicAndPathCostNode {
+    bool operator() (Node const& n1, Node const& n2) {
+        int f1 = n1.heuristic_cost + n1.path_cost;
+        int f2 = n2.heuristic_cost + n2.path_cost;
+
+        if (f1 > f2) { // min: valor - f
+            return true;
+        } else if (f1 == f2) {
+            return n1.heuristic_cost > n2.heuristic_cost; // min: valor h
         }
 
         return false;

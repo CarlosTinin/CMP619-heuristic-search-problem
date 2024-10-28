@@ -5,25 +5,19 @@
 #include "./lib/bfs.hpp"
 #include "./lib/gbfs.hpp"
 #include "./lib/idfs.hpp"
+#include "./lib/astar.hpp"
+#include "./lib/idastar.hpp"
 
 using chrono::high_resolution_clock;
 using chrono::duration;
 
 void printState(vector<int> vect);
 
-void astar() {
-    printf("TODO: ASTAR");
-}
-
-void idastar() {
-    printf("TODO: IDASTAR");
-}
-
 Entry parseArguments(int count, char* argv[]);
 
 void printEntry(Entry entry);
 
-int main(int argc, char* argv[]) { // refactor here
+int main(int argc, char* argv[]) { // TODO: refactor here
     if (argc < 11) {
         cout << "Invalid entry size.";
         return 0;
@@ -31,7 +25,23 @@ int main(int argc, char* argv[]) { // refactor here
     Entry entry = parseArguments(argc, argv);
 
     if (entry.algorithm == "-astar") {
-        astar();
+        for (int i = 0; i < entry.puzzles.size(); i++ ) {
+            int expanded_nodes = 0;
+            double heuristic_total = 0;
+            vector<int> puzzle = entry.puzzles.at(i);
+
+            auto init = high_resolution_clock::now();
+            Node result = astar(puzzle, &expanded_nodes, &heuristic_total);
+            auto finish = high_resolution_clock::now();
+
+            duration<double> elapsed_time = finish - init;
+            cout << fixed;
+            cout << expanded_nodes << ",";
+            cout << result.path_cost << ",";
+            cout << elapsed_time.count() << ",";
+            cout << heuristic_total/expanded_nodes << ",";
+            cout << heuristic(puzzle) << endl;
+        }
     } else if (entry.algorithm == "-bfs") {
         for (int i = 0; i < entry.puzzles.size(); i++ ) {
             int expanded_nodes = 0;
@@ -49,7 +59,23 @@ int main(int argc, char* argv[]) { // refactor here
             cout << heuristic(puzzle) << endl;
         }
     } else if (entry.algorithm == "-idastar") {
-        idastar();
+        for (int i = 0; i < entry.puzzles.size(); i++ ) {
+            int expanded_nodes = 0;
+            double heuristic_total = 0;
+            vector<int> puzzle = entry.puzzles.at(i);
+
+            auto init = high_resolution_clock::now();
+            Node result = idastar(puzzle, &expanded_nodes, &heuristic_total);
+            auto finish = high_resolution_clock::now();
+
+            duration<double> elapsed_time = finish - init;
+            cout << fixed;
+            cout << expanded_nodes << ",";
+            cout << result.path_cost << ",";
+            cout << elapsed_time.count() << ",";
+            cout << heuristic_total/expanded_nodes << ",";
+            cout << heuristic(puzzle) << endl;
+        }
     } else if (entry.algorithm == "-idfs") {
         for (int i = 0; i < entry.puzzles.size(); i++ ) {
             int expanded_nodes = 0, cost = 0;
