@@ -11,11 +11,9 @@
 using chrono::high_resolution_clock;
 using chrono::duration;
 
-void printState(vector<int> vect);
-
 Entry parseArguments(int count, char* argv[]);
 
-void printEntry(Entry entry);
+void printResult(int expanded_nodes, int cost, double elapsed_time, double heuristic_total, int initial_heuristic);
 
 int main(int argc, char* argv[]) { // TODO: refactor here
     if (argc < 11) {
@@ -24,92 +22,49 @@ int main(int argc, char* argv[]) { // TODO: refactor here
     }
     Entry entry = parseArguments(argc, argv);
 
-    if (entry.algorithm == "-astar") {
-        for (int i = 0; i < entry.puzzles.size(); i++ ) {
-            int expanded_nodes = 0;
-            double heuristic_total = 0;
-            vector<int> puzzle = entry.puzzles.at(i);
-
+    for (int i = 0; i < entry.puzzles.size(); i++ ) {
+        int expanded_nodes = 0, cost = 0;
+        double heuristic_total = 0;
+        duration<double> elapsed_time;
+        vector<int> puzzle = entry.puzzles.at(i);
+        
+        if (entry.algorithm == "-astar") {
             auto init = high_resolution_clock::now();
             Node result = astar(puzzle, &expanded_nodes, &heuristic_total);
             auto finish = high_resolution_clock::now();
 
-            duration<double> elapsed_time = finish - init;
-            cout << fixed;
-            cout << expanded_nodes << ",";
-            cout << result.path_cost << ",";
-            cout << elapsed_time.count() << ",";
-            cout << heuristic_total/expanded_nodes << ",";
-            cout << heuristic(puzzle) << endl;
-        }
-    } else if (entry.algorithm == "-bfs") {
-        for (int i = 0; i < entry.puzzles.size(); i++ ) {
-            int expanded_nodes = 0;
-            vector<int> puzzle = entry.puzzles.at(i);
-
+            cost = result.path_cost;
+            elapsed_time = finish - init;
+        } else if (entry.algorithm == "-bfs") {
             auto init = high_resolution_clock::now();
             Node result = bfs(puzzle, &expanded_nodes);
             auto finish = high_resolution_clock::now();
 
-            duration<double> elapsed_time = finish - init;
-            cout << expanded_nodes << ",";
-            cout << result.path_cost << ",";
-            cout << elapsed_time.count() << ",";
-            cout << "0,";
-            cout << heuristic(puzzle) << endl;
-        }
-    } else if (entry.algorithm == "-idastar") {
-        for (int i = 0; i < entry.puzzles.size(); i++ ) {
-            int expanded_nodes = 0;
-            double heuristic_total = 0;
-            vector<int> puzzle = entry.puzzles.at(i);
-
+            cost = result.path_cost;
+            elapsed_time = finish - init;
+        } else if (entry.algorithm == "-idastar") {
             auto init = high_resolution_clock::now();
             Node result = idastar(puzzle, &expanded_nodes, &heuristic_total);
             auto finish = high_resolution_clock::now();
 
-            duration<double> elapsed_time = finish - init;
-            cout << fixed;
-            cout << expanded_nodes << ",";
-            cout << result.path_cost << ",";
-            cout << elapsed_time.count() << ",";
-            cout << heuristic_total/expanded_nodes << ",";
-            cout << heuristic(puzzle) << endl;
-        }
-    } else if (entry.algorithm == "-idfs") {
-        for (int i = 0; i < entry.puzzles.size(); i++ ) {
-            int expanded_nodes = 0, cost = 0;
-            vector<int> puzzle = entry.puzzles.at(i);
-
+            cost = result.path_cost;
+            elapsed_time = finish - init;
+        } else if (entry.algorithm == "-idfs") {
             auto init = high_resolution_clock::now();
             vector<int> result = idfs(puzzle, &cost, &expanded_nodes);
             auto finish = high_resolution_clock::now();
-
-            duration<double> elapsed_time = finish - init;
-            cout << expanded_nodes << ",";
-            cout << cost << ",";
-            cout << elapsed_time.count() << ",";
-            cout << "0,";
-            cout << heuristic(puzzle) << endl;
-        }
-    } else { // GBFS
-        for (int i = 0; i < entry.puzzles.size(); i++ ) {
-            int expanded_nodes = 0;
-            double heuristic_total = 0;
-            vector<int> puzzle = entry.puzzles.at(i);
-
+            
+            elapsed_time = finish - init;
+        } else {
             auto init = high_resolution_clock::now();
             Node result = gbfs(puzzle, &expanded_nodes, &heuristic_total);
             auto finish = high_resolution_clock::now();
 
-            duration<double> elapsed_time = finish - init;
-            cout << fixed;
-            cout << expanded_nodes << ",";
-            cout << result.path_cost << ",";
-            cout << elapsed_time.count() << ",";
-            cout << heuristic_total/expanded_nodes << ",";
-            cout << heuristic(puzzle) << endl;
+            cost = result.path_cost;
+            elapsed_time = finish - init;
         }
+
+        printResult(expanded_nodes, cost, elapsed_time.count(), heuristic_total, heuristic(puzzle));        
     }
 
     return 0;
@@ -135,4 +90,21 @@ Entry parseArguments(int count, char* argv[]) {
         entry.puzzles.push_back(puzzle);
 
     return entry;
+}
+
+void printResult(int expanded_nodes, int cost, double elapsed_time, double heuristic_total, int initial_heuristic) {
+    double h_avg = heuristic_total/expanded_nodes;
+    
+    cout << fixed;
+    cout << expanded_nodes << ",";
+    cout << cost << ",";
+    cout << elapsed_time << ",";
+    
+    if (h_avg != 0) {
+        cout << h_avg << ",";
+    } else {
+        cout << "0,";
+    }
+    
+    cout << initial_heuristic << endl;
 }
