@@ -4,7 +4,7 @@
 
 const int INFINITE = 99999999;
 
-Node idastar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
+Node idastar(vector<int> puzzle, int* exp_nodes) {
     Node init = make_root_node(puzzle);
 
     Node temp;
@@ -16,7 +16,7 @@ Node idastar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
     pair<int, Node> result;
 
     while (f_limit != INFINITE) {
-        result = recursive_idastar(init, f_limit, exp_nodes, heuristic_total);
+        result = recursive_idastar(init, f_limit, exp_nodes);
         f_limit = result.first;
 
         if (!result.second.state.empty())
@@ -26,7 +26,7 @@ Node idastar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
     return Node{};
 }
 
-pair<int, Node> recursive_idastar(Node n, int f_limit, int* exp_nodes, double* heuristic_total) {
+pair<int, Node> recursive_idastar(Node n, int f_limit, int* exp_nodes) {
     if (n.f() > f_limit) {
         return {n.f(), Node{}};
     }
@@ -38,11 +38,10 @@ pair<int, Node> recursive_idastar(Node n, int f_limit, int* exp_nodes, double* h
     int next_limit = INFINITE;
     vector<Node> succ = successors(&n);
     *exp_nodes += 1;
-    *heuristic_total += n.heuristic_cost;
     pair<int, Node> result;
 
     for (int i = 0; i < succ.size(); i++) {
-        result = recursive_idastar(succ[i], f_limit, exp_nodes, heuristic_total);
+        result = recursive_idastar(succ[i], f_limit, exp_nodes);
         int rec_limit = result.first;
         
         if (!result.second.state.empty()) {

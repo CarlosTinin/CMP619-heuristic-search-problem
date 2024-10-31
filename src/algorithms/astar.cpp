@@ -5,7 +5,7 @@
 
 #include "../lib/astar.hpp"
 
-Node astar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
+Node astar(vector<int> puzzle, int* exp_nodes) {
     priority_queue <Node, vector<Node>, CompareHeuristicAndPathCostNode > open; // min-heap
 
     Node init = make_root_node(puzzle);
@@ -31,7 +31,6 @@ Node astar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
             }
             
             *exp_nodes += 1;
-            *heuristic_total += n.heuristic_cost;
 
             vector<Node> succ = successors(&n);
 
@@ -46,7 +45,7 @@ Node astar(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
     return (Node) {};
 }
 
-Node astar_15(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
+Node astar_15(vector<int> puzzle, int* exp_nodes) {
     priority_queue <Node, vector<Node>, CompareHeuristicAndPathCostNode > open; // min-heap
 
     Node init = make_root_node_15(puzzle);
@@ -74,7 +73,6 @@ Node astar_15(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
             }
             
             *exp_nodes += 1;
-            *heuristic_total += n.heuristic_cost;
 
             vector<Node> succ = successors_15(&n);
 

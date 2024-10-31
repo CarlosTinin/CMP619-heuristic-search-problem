@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <chrono>
+#include <iomanip>
 
 #include "./lib/bfs.hpp"
 #include "./lib/gbfs.hpp"
@@ -13,7 +14,7 @@ using chrono::duration;
 
 Entry parseArguments(int count, char* argv[]);
 
-void printResult(int expanded_nodes, int cost, double elapsed_time, double heuristic_total, int initial_heuristic);
+void printResult(int expanded_nodes, int cost, double elapsed_time, float heuristic_total, int initial_heuristic);
 
 int main(int argc, char* argv[]) {
     if (argc < 11) {
@@ -24,7 +25,6 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < entry.puzzles.size(); i++ ) {
         int expanded_nodes = 0, cost = 0;
-        double heuristic_total = 0;
         duration<double> elapsed_time;
         vector<int> puzzle = entry.puzzles.at(i);
         
@@ -32,13 +32,13 @@ int main(int argc, char* argv[]) {
             Node result = Node{};
             if (entry.puzzles.at(i).size() == 9) {
                 auto init = high_resolution_clock::now();
-                Node result = astar(puzzle, &expanded_nodes, &heuristic_total);
+                Node result = astar(puzzle, &expanded_nodes);
                 auto finish = high_resolution_clock::now();
                 elapsed_time = finish - init;
                 cost = result.path_cost;
             } else {
                 auto init = high_resolution_clock::now();
-                Node result = astar_15(puzzle, &expanded_nodes, &heuristic_total);
+                Node result = astar_15(puzzle, &expanded_nodes);
                 auto finish = high_resolution_clock::now();
                 elapsed_time = finish - init;
                 cost = result.path_cost;
@@ -47,12 +47,12 @@ int main(int argc, char* argv[]) {
             auto init = high_resolution_clock::now();
             Node result = bfs(puzzle, &expanded_nodes);
             auto finish = high_resolution_clock::now();
-
+            getSum(); // resets counters
             cost = result.path_cost;
             elapsed_time = finish - init;
         } else if (entry.algorithm == "-idastar") {
             auto init = high_resolution_clock::now();
-            Node result = idastar(puzzle, &expanded_nodes, &heuristic_total);
+            Node result = idastar(puzzle, &expanded_nodes);
             auto finish = high_resolution_clock::now();
 
             cost = result.path_cost;
@@ -61,18 +61,18 @@ int main(int argc, char* argv[]) {
             auto init = high_resolution_clock::now();
             vector<int> result = idfs(puzzle, &cost, &expanded_nodes);
             auto finish = high_resolution_clock::now();
-            
+            getSum(); // resets counters
             elapsed_time = finish - init;
         } else {
             auto init = high_resolution_clock::now();
-            Node result = gbfs(puzzle, &expanded_nodes, &heuristic_total);
+            Node result = gbfs(puzzle, &expanded_nodes);
             auto finish = high_resolution_clock::now();
 
             cost = result.path_cost;
             elapsed_time = finish - init;
         }
 
-        printResult(expanded_nodes, cost, elapsed_time.count(), heuristic_total, heuristic(puzzle));        
+        printResult(expanded_nodes, cost, elapsed_time.count(), getSum(), heuristic(puzzle));        
     }
 
     return 0;
@@ -100,19 +100,17 @@ Entry parseArguments(int count, char* argv[]) {
     return entry;
 }
 
-void printResult(int expanded_nodes, int cost, double elapsed_time, double heuristic_total, int initial_heuristic) {
-    double h_avg = heuristic_total/expanded_nodes;
-    
-    cout << fixed;
+void printResult(int expanded_nodes, int cost, double elapsed_time, float heuristic_avg, int initial_heuristic) {
     cout << expanded_nodes << ",";
     cout << cost << ",";
     cout << elapsed_time << ",";
     
-    if (h_avg != 0) {
-        cout << h_avg << ",";
+    if (heuristic_avg != 0) {
+        cout << fixed << setprecision(5) << heuristic_avg << ",";
     } else {
         cout << "0,";
     }
-    
+
     cout << initial_heuristic << endl;
+    cout.unsetf(ios::fixed);
 }

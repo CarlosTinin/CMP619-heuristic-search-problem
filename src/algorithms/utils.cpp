@@ -2,7 +2,11 @@
 #include <cmath>
 #include "../lib/utils.hpp"
 
+int counter = 0;
+int h_sum = 0;
+
 int heuristic(vector<int> state) {
+    counter++;
     int heuristicSum = 0;
     for (int i = 0; i < state.size(); i++) {
         if (state.at(i) != 0) { // remove blank from heuristic calculation
@@ -13,10 +17,13 @@ int heuristic(vector<int> state) {
         }
     }
 
+    h_sum += heuristicSum;
+
     return heuristicSum;
 }
 
 int heuristic_15(vector<int> state) {
+    counter++;
     int heuristicSum = 0;
     for (int i = 0; i < state.size(); i++) {
         if (state.at(i) != 0) { // remove blank from heuristic calculation
@@ -27,6 +34,7 @@ int heuristic_15(vector<int> state) {
         }
     }
 
+    h_sum += heuristicSum;
     return heuristicSum;
 }
 
@@ -86,7 +94,7 @@ Node make_node_15(Node* parent, ACTIONS action, vector<int> state) {
     return node;
 }
 
-bool is_goal(vector<int> puzzle) { // TODO improve preformance
+bool is_goal(vector<int> puzzle) {
     for (int i = 0; i < puzzle.size(); i++) {
         if (puzzle.at(i) != i) {
             return false;
@@ -119,5 +127,16 @@ int vectToInt(vector<int> vect) {
     for (auto d : vect) {
         result = result * 10 + d;
     }
+    return result;
+}
+
+float getSum() {
+    float result = 0;
+    if (h_sum != 0)
+        result = (float) h_sum / (float) counter;
+    
+    h_sum = 0;
+    counter = 0;
+
     return result;
 }

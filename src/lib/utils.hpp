@@ -94,4 +94,5 @@ vector<int> swap(vector<int> puzzle, int first_position, int second_position);
 
 void printEntry(Entry entry);
 
+float getSum();
 #endif

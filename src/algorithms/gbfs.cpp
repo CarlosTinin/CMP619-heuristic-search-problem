@@ -4,7 +4,7 @@
 
 #include "../lib/gbfs.hpp"
 
-Node gbfs(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
+Node gbfs(vector<int> puzzle, int* exp_nodes) {
     priority_queue <Node, vector<Node>, CompareHeuristicNode > open; // min-heap
 
     Node init = make_root_node(puzzle);
@@ -30,7 +30,6 @@ Node gbfs(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
                 return n;
             }
 
-            *heuristic_total += n.heuristic_cost;
             *exp_nodes += 1;
             
             vector<Node> succ = successors(&n);
