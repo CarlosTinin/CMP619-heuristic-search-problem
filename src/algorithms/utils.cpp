@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "../lib/utils.hpp"
 
 int heuristic(vector<int> state) {
@@ -6,7 +7,21 @@ int heuristic(vector<int> state) {
     for (int i = 0; i < state.size(); i++) {
         if (state.at(i) != 0) { // remove blank from heuristic calculation
             int column = abs((state.at(i) % 3) - (i % 3)); // checking column
-            int row = abs((floor(state.at(i) / 3) - (i / 3))); // checking row
+            int row = abs((floor(state.at(i) / 3) - floor(i / 3))); // checking row
+
+            heuristicSum += column+row;
+        }
+    }
+
+    return heuristicSum;
+}
+
+int heuristic_15(vector<int> state) {
+    int heuristicSum = 0;
+    for (int i = 0; i < state.size(); i++) {
+        if (state.at(i) != 0) { // remove blank from heuristic calculation
+            int column = abs((state.at(i) % 4) - (i % 4)); // checking column
+            int row = abs((floor(state.at(i) / 4) - floor(i / 4))); // checking row
 
             heuristicSum += column+row;
         }
@@ -30,7 +45,20 @@ Node make_root_node(vector<int> state) {
     node.parent = NULL;
     node.action = INITIAL;
     node.path_cost = 0;
+    node.insertion_order = 0;
     node.heuristic_cost = heuristic(node.state);
+
+    return node;
+}
+
+Node make_root_node_15(vector<int> state) {
+    Node node;
+    node.state = state;
+    node.parent = NULL;
+    node.action = INITIAL;
+    node.path_cost = 0;
+    node.insertion_order = 0;
+    node.heuristic_cost = heuristic_15(node.state);
 
     return node;
 }
@@ -39,9 +67,21 @@ Node make_node(Node* parent, ACTIONS action, vector<int> state) {
     Node node;
     node.state = state;
     node.parent = parent;
+    node.insertion_order = 0;
     node.action = action;
     node.path_cost = parent->path_cost + 1;
     node.heuristic_cost = heuristic(node.state);
+
+    return node;
+}
+
+Node make_node_15(Node* parent, ACTIONS action, vector<int> state) {
+    Node node;
+    node.state = state;
+    node.parent = parent;
+    node.action = action;
+    node.path_cost = parent->path_cost + 1;
+    node.heuristic_cost = heuristic_15(node.state);
 
     return node;
 }
@@ -72,4 +112,12 @@ void printState(vector<int> vect) {
         cout << vect[i] << " ";
     }
     cout << "];";
+}
+
+int vectToInt(vector<int> vect) {
+    int result = 0;
+    for (auto d : vect) {
+        result = result * 10 + d;
+    }
+    return result;
 }

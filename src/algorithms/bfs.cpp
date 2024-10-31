@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_set>
-#include <stdlib.h> 
+#include <deque>
+#include <stdlib.h>
 #include "../lib/bfs.hpp"
 
 vector<Node> successors(Node* actual) { // works only for 8puzzle

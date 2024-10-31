@@ -15,7 +15,7 @@ Entry parseArguments(int count, char* argv[]);
 
 void printResult(int expanded_nodes, int cost, double elapsed_time, double heuristic_total, int initial_heuristic);
 
-int main(int argc, char* argv[]) { // TODO: refactor here
+int main(int argc, char* argv[]) {
     if (argc < 11) {
         cout << "Invalid entry size.";
         return 0;
@@ -29,12 +29,20 @@ int main(int argc, char* argv[]) { // TODO: refactor here
         vector<int> puzzle = entry.puzzles.at(i);
         
         if (entry.algorithm == "-astar") {
-            auto init = high_resolution_clock::now();
-            Node result = astar(puzzle, &expanded_nodes, &heuristic_total);
-            auto finish = high_resolution_clock::now();
-
-            cost = result.path_cost;
-            elapsed_time = finish - init;
+            Node result = Node{};
+            if (entry.puzzles.at(i).size() == 9) {
+                auto init = high_resolution_clock::now();
+                Node result = astar(puzzle, &expanded_nodes, &heuristic_total);
+                auto finish = high_resolution_clock::now();
+                elapsed_time = finish - init;
+                cost = result.path_cost;
+            } else {
+                auto init = high_resolution_clock::now();
+                Node result = astar_15(puzzle, &expanded_nodes, &heuristic_total);
+                auto finish = high_resolution_clock::now();
+                elapsed_time = finish - init;
+                cost = result.path_cost;
+            }
         } else if (entry.algorithm == "-bfs") {
             auto init = high_resolution_clock::now();
             Node result = bfs(puzzle, &expanded_nodes);

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unordered_set>
+#include <queue>
 
 #include "../lib/gbfs.hpp"
 
@@ -10,6 +11,7 @@ Node gbfs(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
     Node temp;
     temp.state = {-1, -1, -1, -1, -1, -1, -1, -1, -1}; 
     temp.path_cost = 0;
+    temp.heuristic_cost = 0;
     init.parent = &temp;
     open.push(init);
     
@@ -20,21 +22,29 @@ Node gbfs(vector<int> puzzle, int* exp_nodes, double* heuristic_total) {
         open.pop();
 
         if (closed.find(n.state) == closed.end()) {
+            //printState(n.state);
+            //cout << " --> ";
             closed.insert(n.state);
-            
+
             if (is_goal(n.state)) {
                 return n;
             }
 
+            *heuristic_total += n.heuristic_cost;
+            *exp_nodes += 1;
+            
             vector<Node> succ = successors(&n);
 
             for (int i = 0; i < succ.size(); i++) {
+                // cout << "(";
+                // printState(succ[i].state);
+                // cout << " [ ";
+                // cout << succ[i].heuristic_cost << ", " << succ[i].path_cost;
+                // cout << " ]) ";
                 open.push(succ[i]);
             }
+            //cout << endl;
         }
-
-        *exp_nodes += 1;
-        *heuristic_total += n.heuristic_cost;
     }
 
     return (Node) {};
