@@ -55,6 +55,9 @@ Node astar_15(vector<int> puzzle, int* exp_nodes) {
     init.parent = &temp;
     int insert_order = 0;
     open.push(init);
+
+    const std::chrono::seconds timeLimit(30);
+    auto start = std::chrono::steady_clock::now();
     
     //map< vector<int>, int> distances; // with reopening
     unordered_set< vector<int>, VectorHash > closed; // without reopening
@@ -62,6 +65,14 @@ Node astar_15(vector<int> puzzle, int* exp_nodes) {
     while (!open.empty()) {
         Node n = open.top();
         open.pop();
+    
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = now - start;
+
+        if (elapsed > timeLimit) {
+            cout << "Operation canceled: Time limit exceeded (30 seconds)." << endl;
+            return (Node){};
+        }
 
         //if (distances.find(n.state) == distances.end() || n.path_cost < distances[n.state]) {
         if (closed.find(n.state) == closed.end()) {
