@@ -27,7 +27,8 @@ vector<Node> successors(Node* actual) { // works only for 8puzzle
         if (new_blank >= 0 && new_blank < 9 && !((blank % 3 == 0 && direction == LEFT) || (blank % 3 == 2 && direction == RIGHT))) {
             if (actual->parent->state.at(new_blank) != 0) {
                 vector<int> newState = actual->state;
-                Node* parent = (Node *) malloc(sizeof(Node));
+                //Node* parent = (Node *) malloc(sizeof(Node));
+                Node* parent = new Node();
                 *parent = *actual;
                 result.push_back(make_node(parent, direction, swap(newState, new_blank, blank)));
             }
