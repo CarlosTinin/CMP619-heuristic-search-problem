@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <map>
+#include <chrono>
 
 #include "../lib/astar.hpp"
 
