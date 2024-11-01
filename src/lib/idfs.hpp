@@ -4,7 +4,7 @@
 #ifndef IDFS_H
 #define IDFS_H
 
-const int MAX_DEPTH = 23;
+const int MAX_DEPTH = 30;
 
 vector<int> recursive_idfs(vector<int> puzzle, int* cost, int* exp_nodes, int depth_limit, vector<int> parent);
 
